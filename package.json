@@ -1,0 +1,14 @@
+{
+  "name": "quackbot",
+  "version": "1.0.0",
+  "description": "Not a selfbot!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kiruhara Nanako",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js-selfbot-v13": "^2.3.74"
+  }
+}
