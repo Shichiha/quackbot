@@ -1,5 +1,6 @@
 const Discord = require("discord.js-selfbot-v13");
 const { token } = require("./config.json");
+const { msToRelativeTime }  = require("./helper.js");
 
 const client = new Discord.Client({
   checkUpdate: false,
@@ -16,13 +17,15 @@ client.on("ready", () => {
   }, 5000);
 });
 
-client.on("message", async (message) => {
+client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (message.content.indexOf("!ping") === 0) {
     message.channel.send("Pong!");
   }
   if (message.content.indexOf("!uptime") === 0) {
-    message.channel.send(`Uptime: ${uptime} seconds`);
+    let uptime = client.uptime;
+    let uptime_r = msToRelativeTime(uptime); // Relative Time
+    message.channel.send(`Uptime: ${uptime_r}`);
   }
   console.log(`${message.author.username}: ${message.content}`);
 });
