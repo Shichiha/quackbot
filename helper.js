@@ -1,3 +1,4 @@
+const os = require('os');
 function msToRelativeTime(ms) {
     var seconds = Math.floor((ms / 1000) % 60);
     var decimal = Math.floor((ms / 1000) % 1 * 10);
@@ -23,4 +24,15 @@ function msToRelativeTime(ms) {
     return result;
 }
 
+function getPCSpecs() {
+    var specs = {};
+    specs = {
+        platform: os.platform(),
+        release: os.release(),
+        uptime: os.uptime(),
+        memory: os.freemem()
+    };
+    return specs
+}
+console.log(getPCSpecs());
 module.exports = { msToRelativeTime };

@@ -9,6 +9,7 @@
   "author": "Kiruhara Nanako",
   "license": "MIT",
   "dependencies": {
-    "discord.js-selfbot-v13": "^2.3.74"
+    "discord.js-selfbot-v13": "^2.3.74",
+    "node-color-log": "^9.0.0"
   }
 }
