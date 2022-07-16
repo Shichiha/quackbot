@@ -53,10 +53,16 @@ messageCreateCommands.push(
     }
   }),
   new Command('echo', 'Echoes back what you say', 'echo', message => {
+    let blocked= ['?echo']
     let args = message.content.split(' ')
     let echo_message = ''
     for (let i = 1; i < args.length; i++) {
       echo_message += `${args[i]} `
+    }
+    for (let i = 0; i < blocked.length; i++) {
+      if (echo_message.includes(blocked[i])) {
+        echo_message = `"${echo_message}"`
+      }
     }
     message.channel.send(echo_message)
   })
