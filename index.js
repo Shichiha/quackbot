@@ -4,6 +4,12 @@ const logger = require('node-color-log')
 const activities = require('./activities.json')
 const safeEval = require('safe-eval')
 const { msToRelativeTime, Command } = require('./helper.js')
+// check if there's a database.json file
+const fs = require('fs')
+if (!fs.existsSync('./database.json')) {
+  fs.writeFileSync('./database.json', '{}')
+}
+const database = require('./database.json')
 logger.setDate(() => new Date().toLocaleTimeString())
 
 const client = new Discord.Client({
@@ -45,6 +51,14 @@ messageCreateCommands.push(
     } else {
       message.channel.send(`no user, wat?`)
     }
+  }),
+  new Command('echo', 'Echoes back what you say', 'echo', message => {
+    let args = message.content.split(' ')
+    let echo_message = ''
+    for (let i = 1; i < args.length; i++) {
+      echo_message += `${args[i]} `
+    }
+    message.channel.send(echo_message)
   })
 )
 
