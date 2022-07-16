@@ -3,7 +3,7 @@ const { token } = require('./config.json')
 const logger = require('node-color-log')
 const activities = require('./activities.json')
 const safeEval = require('safe-eval')
-const {msToRelativeTime, Command} = require('./helper.js')
+const { msToRelativeTime, Command } = require('./helper.js')
 logger.setDate(() => new Date().toLocaleTimeString())
 
 const client = new Discord.Client({
@@ -38,19 +38,12 @@ messageCreateCommands.push(
     }
     message.channel.send(help_message)
   }),
-  new Command('eval', 'Evaluates a code snippet', 'eval', message => {
-    code = ''
-    try {
-      let code = message.content.split('```')[1].split('```')[0]
-      logger.info(`${message.author.username} evaled: ${code}`)
-      try {
-        let result = safeEval(code)
-        message.channel.send(`Result: ${result}`)
-      } catch (err) {
-        message.channel.send(`${err}`)
-      }
-    } catch (error) {
-      message.channel.send(`Error: ${error}`)
+  new Command('getpfp', 'Gets the pfp of a user', 'getpfp', message => {
+    let user = message.mentions.users.first()
+    if (user) {
+      message.channel.send(`${user.avatarURL()}?size=4096`)
+    } else {
+      message.channel.send(`no user, wat?`)
     }
   })
 )
@@ -69,7 +62,7 @@ client.on('messageCreate', async message => {
           font: 'black',
           bg: 'yellow'
         },
-        `Command Activated: ${messageCreateCommands[i].name}`
+        `> : ${messageCreateCommands[i].name}`
       )
     }
   }
