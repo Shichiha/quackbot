@@ -181,6 +181,7 @@ Commands.push(
 
 // Message Create Event
 client.on('messageCreate', async message => {
+  if (message.author.bot || message.author.id == client.user.id) return;
   for (let i = 0; i < Commands.length; i++) {
     let prefix = '>'
     let commandName = Commands[i].usage
