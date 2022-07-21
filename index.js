@@ -103,34 +103,28 @@ function Eval_(id, message, extra_args) {
   })
 }
 
-class Eval extends Command {
-  constructor(id, usage, extra_args) {
-    cmd_function = message => {
-      Eval_(this.id, message, extra_args)
-    }
-    super(usage, description, cmd_function)
-    this.id = id
-  }
+function Eval(id, usage, extra_args) {
+  new Command('', usage, () => Eval_(id, message, extra_args))
 }
 
 const Evaluate_Commands = []
 Evaluate_Commands.push(
-  new Eval('14', 'lua'),
-  new Eval('43', 'kotlin'),
-  new Eval('17', 'js'),
-  new Eval('7', 'cpp', { CompilerArgs: "-Wall -std=c++14 -O2 -o a.out source_file.cpp" }),
-  new Eval('38', 'bash'),
-  new Eval('15', 'asm'),
-  new Eval('5', 'py'),
-  new Eval('24' , 'py3'),
-  new Eval('46', 'rust'),
-  new Eval('33', 'mysql'),
-  new Eval('45', 'fortran'),
-  new Eval('12', 'ruby'),
-  new Eval('1', 'c#'),
-  new Eval('30', 'd', { CompilerArgs: "source_file.d -ofa.out"}),
-  new Eval('9', 'pascal'),
-  new Eval('23', 'nodejs')
+  Eval('14', 'lua'),
+  Eval('43', 'kotlin'),
+  Eval('17', 'js'),
+  Eval('7', 'cpp', { CompilerArgs: "-Wall -std=c++14 -O2 -o a.out source_file.cpp" }),
+  Eval('38', 'bash'),
+  Eval('15', 'asm'),
+  Eval('5', 'py'),
+  Eval('24', 'py3'),
+  Eval('46', 'rust'),
+  Eval('33', 'mysql'),
+  Eval('45', 'fortran'),
+  Eval('12', 'ruby'),
+  Eval('1', 'c#'),
+  Eval('30', 'd', { CompilerArgs: "source_file.d -ofa.out" }),
+  Eval('9', 'pascal'),
+  Eval('23', 'nodejs')
 )
 
 
@@ -142,9 +136,6 @@ Commands.push(
     let help_message = ''
     for (let i = 0; i < Commands.length; i++) {
       help_message += `${Commands[i].description}\nUsage: ${Commands[i].usage}\n\n`
-    }
-    for (let i = 0; i < Evaluate_Commands.length; i++) {
-      help_message += `Evaluate a code snippet\nSupported Languages and their shortcuts:\n${Evaluate_Commands[i].usage},`
     }
     message_(help_message, message)
   }),
@@ -216,7 +207,7 @@ client.on('messageCreate', async message => {
     return
   }
   forEachCommand(Commands, message)
-  forEachCommand(Evaluate_Commands, message)
+  
 })
 
 // Start the bot (synchronous)
