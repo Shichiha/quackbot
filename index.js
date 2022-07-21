@@ -203,9 +203,8 @@ function forEachCommand(commands, message) {
 }
 // Message Create Event
 client.on('messageCreate', async message => {
-  if (message.author.bot) {
-    return
-  }
+  if (message.author.bot) return;
+  if (message.author.id === client.user.id) return;
   forEachCommand(Commands, message)
   
 })
