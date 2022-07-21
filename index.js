@@ -17,7 +17,7 @@ logger.setDate(() => new Date().toLocaleTimeString())
 const client = new Discord.Client({ checkUpdate: false })
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`)
-  // Setting User Activity (Playing a random activity)
+  // Setting User Activity XD (Playing a random activity )
   setInterval(() => {
     const index = Math.floor(Math.random() * (activities_list.length - 1) + 1)
     client.user.setActivity(activities_list[index])
@@ -82,24 +82,59 @@ function rextest_eval(code, lcw, extra_args) {
   })
 }
 
-// Evaluate Command Helper
+// Evaluate Command Helpers
 function Eval_(id, message, extra_args) {
   let code = message.content.split(' ').slice(1).join(' ')
   logger.info(`Evaluating ${code}`)
-  rextest_eval(code, id, extra_args).then(body => {
-    let body_ = JSON.parse(body)
-    let to_send = `\`\`\`\n${body_.Result}\n\`\`\``
-    message_(to_send, message)
-    logger.info(body)
-  }
-  ).catch(err => {
-    logger.error(err)
-  }
-  )
+  rextest_eval(code, id, extra_args).then(res => {
+    let res_json = JSON.parse(res)
+    let to_log = ''
+    if (res_json.Errors) {
+      logger.error(res_json.Errors)
+      to_log = res_json.Errors
+    }
+    if (res_json.Warnings) {
+      logger.warn(res_json.Warnings)
+      to_log += res_json.Warnings
+    }
+    logger.info(res_json.Result)
+    to_log += res_json.Result
+    message_(to_log, message)
+  })
 }
 
+class Eval extends Command {
+  constructor(id, usage, extra_args) {
+    cmd_function = message => {
+      Eval_(this.id, message, extra_args)
+    }
+    super(usage, description, cmd_function)
+    this.id = id
+  }
+}
 
-// All the packaged commands
+const Evaluate_Commands = []
+Evaluate_Commands.push(
+  new Eval('14', 'lua'),
+  new Eval('43', 'kotlin'),
+  new Eval('17', 'js'),
+  new Eval('7', 'cpp', { CompilerArgs: "-Wall -std=c++14 -O2 -o a.out source_file.cpp" }),
+  new Eval('38', 'bash'),
+  new Eval('15', 'asm'),
+  new Eval('5', 'py'),
+  new Eval('24' , 'py3'),
+  new Eval('46', 'rust'),
+  new Eval('33', 'mysql'),
+  new Eval('45', 'fortran'),
+  new Eval('12', 'ruby'),
+  new Eval('1', 'c#'),
+  new Eval('30', 'd', { CompilerArgs: "source_file.d -ofa.out"}),
+  new Eval('9', 'pascal'),
+  new Eval('23', 'nodejs')
+)
+
+
+// All the packaged commands (that aren't eval commands)
 const Commands = []
 Commands.push(
   new Command('All the functions and their usage', 'help', message => {
@@ -107,6 +142,9 @@ Commands.push(
     let help_message = ''
     for (let i = 0; i < Commands.length; i++) {
       help_message += `${Commands[i].description}\nUsage: ${Commands[i].usage}\n\n`
+    }
+    for (let i = 0; i < Evaluate_Commands.length; i++) {
+      help_message += `Evaluate a code snippet\nSupported Languages and their shortcuts:\n${Evaluate_Commands[i].usage},`
     }
     message_(help_message, message)
   }),
@@ -151,47 +189,34 @@ Commands.push(
     for (let i = 0; i < blocked.length; i++) {
       if (echo_message.includes(blocked[i])) {
         let index = echo_message.indexOf(blocked[i])
-        // add an invisible character to the start of the string so that the command is not executed (LOL!)
         echo_message = `\u200b${echo_message.substring(index)}`
       }
     }
     message_(echo_message, message)
-  }),
-
-  // Lua Eval
-  new Command('Evaluates a lua code snippet', 'lua', message => {
-    Eval_("14", message)
-  }),
-
-  // Kotlin Eval
-  new Command('Evaluates a kotlin code snippet', 'kotlin', message => {
-    Eval_("43", message)
-  }),
-
-  // JS Eval
-  new Command('Evaluates a javascript code snippet', 'js', message => {
-    Eval_("17", message)
-  }),
-
-  // C++ Eval
-  new Command('Evaluates a c++ code snippet', 'cpp', message => {
-    Eval_("7", message, { CompilerArgs: "-Wall -std=c++14 -O2 -o a.out source_file.cpp" })
-  }),
+  })
 )
 
-// Message Create Event
-client.on('messageCreate', async message => {
-  for (let i = 0; i < Commands.length; i++) {
+// Foreaching the commands
+function forEachCommand(commands, message) {
+  for (let i = 0; i < commands.length; i++) {
     let prefix = '>'
-    let commandName = Commands[i].usage
+    let commandName = commands[i].usage
     let command = `${prefix}${commandName}`
     if (message.content.indexOf(command) === 0) {
-      Commands[i].cmd_function(message)
+      commands[i].cmd_function(message)
       logger.info(`${message.author.username}: ${message.content}
       > ${command.usage}`
       )
     }
   }
+}
+// Message Create Event
+client.on('messageCreate', async message => {
+  if (message.author.bot) {
+    return
+  }
+  forEachCommand(Commands, message)
+  forEachCommand(Evaluate_Commands, message)
 })
 
 // Start the bot (synchronous)
