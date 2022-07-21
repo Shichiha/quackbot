@@ -1,59 +1,148 @@
+// Packages
 const Discord = require('discord.js-selfbot-v13')
-const { token } = require('./config.json')
 const logger = require('node-color-log')
-const activities = require('./activities.json')
-const safeEval = require('safe-eval')
-const { msToRelativeTime, Command } = require('./helper.js')
-// check if there's a database.json file
 const fs = require('fs')
-if (!fs.existsSync('./database.json')) {
-  fs.writeFileSync('./database.json', '{}')
-}
-const database = require('./database.json')
+const request = require('request')
+
+// Internal Resources
+const { token } = require('./config.json')
+const { msToRelativeTime, Command } = require('./helper.js')
+const activities_list = require('./activities.json')
+
+// Logging
+if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') }
 logger.setDate(() => new Date().toLocaleTimeString())
 
-const client = new Discord.Client({
-  checkUpdate: false
-})
-
-const activities_list = activities.activities
-
+// Client
+const client = new Discord.Client({ checkUpdate: false })
 client.on('ready', () => {
-  console.log('Bot is online!')
   console.log(`Logged in as ${client.user.tag}!`)
+  // Setting User Activity (Playing a random activity)
   setInterval(() => {
     const index = Math.floor(Math.random() * (activities_list.length - 1) + 1)
     client.user.setActivity(activities_list[index])
   }, 5000)
 })
 
-const messageCreateCommands = []
-messageCreateCommands.push(
-  new Command('ping', '?', 'ping', message => {
-    message.channel.send('Pong!')
+// A Safe Message (Just in case string is too long)
+function message_(to_send, msg) {
+  if (to_send.length >= 500) {
+    let dn = Date.now()
+    //  ^ Low Effort DN Joke
+    fs.writeFileSync('./logs/' + dn + '.txt', to_send)
+    let formData = {
+      file: fs.createReadStream('./logs/' + dn + '.txt')
+    }
+    request.post(
+      { url: 'https://crepe.moe/upload', formData: formData },
+      (err, res, body) => {
+        if (err) {
+          logger.error(err)
+        }
+        logger.info(body, 'Uploaded to crepe.moe > ', res)
+        let body_ = body.replace('.txt', '')
+        msg.channel.send(`https://crepe.moe/c/${body_}`)
+      }
+    )
+  } else {
+    msg.channel.send(to_send)
+  }
+}
+
+// A "safe" evaluator which uses rextest.com
+function rextest_eval(code, lcw, extra_args) {
+  let url = 'https://rextester.com/rundotnet/Run'
+  let data = {
+    LanguageChoiceWrapper: lcw,
+    EditorChoiceWrapper: '1',
+    LayoutChoiceWrapper: '1',
+    Program: code,
+    Input: '',
+    Privacy: '',
+    PrivacyUsers: '',
+    Title: '',
+    SavedOutput: '',
+    WholeError: '',
+    WholeWarning: '',
+    StatsToSave: '',
+    CodeGuid: '',
+    IsInEditMode: 'False',
+    IsLive: 'False',
+    ...extra_args
+  }
+  logger.info(`Sending ${lcw} to ${url}`)
+  return new Promise((resolve, reject) => {
+    request.post(url, { form: data }, (err, res, body) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(body)
+      }
+    })
+  })
+}
+
+// Evaluate Command Helper
+function Eval_(id, message, extra_args) {
+  let code = message.content.split(' ').slice(1).join(' ')
+  logger.info(`Evaluating ${code}`)
+  rextest_eval(code, id, extra_args).then(body => {
+    let body_ = JSON.parse(body)
+    let to_send = `\`\`\`\n${body_.Result}\n\`\`\``
+    message_(to_send, message)
+    logger.info(body)
+  }
+  ).catch(err => {
+    logger.error(err)
+  }
+  )
+}
+
+
+// All the packaged commands
+const Commands = []
+Commands.push(
+  new Command('All the functions and their usage', 'help', message => {
+    // Help 
+    let help_message = ''
+    for (let i = 0; i < Commands.length; i++) {
+      help_message += `${Commands[i].description}\nUsage: ${Commands[i].usage}\n\n`
+    }
+    message_(help_message, message)
   }),
-  new Command('uptime', 'How long the bot has been on', 'uptime', message => {
+
+  // Ping
+  new Command('?', 'ping', message => {
+    message.channel.send(
+      `🏓 Pong!\nLatency is ${Date.now() -
+      message.createdTimestamp}ms.\nAPI Latency is ${Math.round(
+        client.ws.ping
+      )}ms`
+    )
+  }),
+
+  // Uptime
+  new Command('How long the bot has been on', 'uptime', message => {
     let uptime = client.uptime
     let uptime_r = `${msToRelativeTime(uptime)} ago`
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
-  new Command('help', 'All the functions and their usage', 'help', message => {
-    let help_message = ''
-    for (let i = 0; i < messageCreateCommands.length; i++) {
-      help_message += `${messageCreateCommands[i].name}: ${messageCreateCommands[i].description}\nUsage: ${messageCreateCommands[i].usage}\n\n`
-    }
-    message.channel.send(help_message)
-  }),
-  new Command('getpfp', 'Gets the pfp of a user', 'getpfp', message => {
+  new Command('Gets the pfp of a user', 'getpfp', message => {
     let user = message.mentions.users.first()
     if (user) {
-      message.channel.send(`${user.avatarURL()}?size=4096`)
+      if (user.avatarURL != null) {
+        message.channel.send(user.avatarURL)
+      } else {
+        message.channel.send('User has no/default pfp')
+      }
     } else {
-      message.channel.send(`no user, wat?`)
+      message.channel.send(`No user specified`)
     }
   }),
-  new Command('echo', 'Echoes back what you say', 'echo', message => {
-    let blocked= ['?echo']
+
+  // Echo
+  new Command('Echoes back what you say', 'echo', message => {
+    let blocked = ['?echo']
     let args = message.content.split(' ')
     let echo_message = ''
     for (let i = 1; i < args.length; i++) {
@@ -61,30 +150,49 @@ messageCreateCommands.push(
     }
     for (let i = 0; i < blocked.length; i++) {
       if (echo_message.includes(blocked[i])) {
-        echo_message = `"${echo_message}"`
+        let index = echo_message.indexOf(blocked[i])
+        // add an invisible character to the start of the string so that the command is not executed (LOL!)
+        echo_message = `\u200b${echo_message.substring(index)}`
       }
     }
-    message.channel.send(echo_message)
-  })
+    message_(echo_message, message)
+  }),
+
+  // Lua Eval
+  new Command('Evaluates a lua code snippet', 'lua', message => {
+    Eval_("14", message)
+  }),
+
+  // Kotlin Eval
+  new Command('Evaluates a kotlin code snippet', 'kotlin', message => {
+    Eval_("43", message)
+  }),
+
+  // JS Eval
+  new Command('Evaluates a javascript code snippet', 'js', message => {
+    Eval_("17", message)
+  }),
+
+  // C++ Eval
+  new Command('Evaluates a c++ code snippet', 'cpp', message => {
+    Eval_("7", message, { CompilerArgs: "-Wall -std=c++14 -O2 -o a.out source_file.cpp" })
+  }),
 )
 
+// Message Create Event
 client.on('messageCreate', async message => {
-  if (message.author.bot) return
-  for (let i = 0; i < messageCreateCommands.length; i++) {
+  for (let i = 0; i < Commands.length; i++) {
     let prefix = '>'
-    let commandName = messageCreateCommands[i].name
+    let commandName = Commands[i].usage
     let command = `${prefix}${commandName}`
     if (message.content.indexOf(command) === 0) {
-      messageCreateCommands[i].cmd_function(message)
-      logger.info(`${message.author.username}: ${message.content}`)
-      logger.colorLog(
-        {
-          font: 'black',
-          bg: 'yellow'
-        },
-        `> : ${messageCreateCommands[i].name}`
+      Commands[i].cmd_function(message)
+      logger.info(`${message.author.username}: ${message.content}
+      > ${command.usage}`
       )
     }
   }
 })
+
+// Start the bot (synchronous)
 client.login(token)

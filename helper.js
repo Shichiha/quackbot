@@ -23,11 +23,11 @@ function msToRelativeTime (ms) {
   return result
 }
 class Command {
-  constructor (name, description, usage, cmd_function) {
-    this.name = name
-    this.description = description
+  constructor ( description, usage, cmd_function, show_in_help = true ) {
     this.usage = usage
+    this.description = description
     this.cmd_function = cmd_function
+    this.show_in_help = show_in_help
   }
 }
 module.exports = {
