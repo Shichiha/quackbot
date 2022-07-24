@@ -133,7 +133,7 @@ Commands.push(
     let uptime_r = `${msToRelativeTime(uptime)} ago`
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
-  new Command('getpfp', 'Gets the pfp of a user', 'getpfp', message => {
+  new Command('Gets the pfp of a user', 'getpfp', message => {
     let user = message.mentions.users.first()
     if (user) {
       message.channel.send(`${user.avatarURL()}?size=4096`)
