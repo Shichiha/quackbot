@@ -112,7 +112,7 @@ Commands.push(
     for (let i = 0; i < Commands.length; i++) {
       if (Commands[i].show_in_help) {
         help_message += `${Commands[i].description}\nUsage: ${Commands[i].usage}\n\n`
-      } 
+      }
     }
     message_(help_message, message)
   }),
@@ -136,13 +136,9 @@ Commands.push(
   new Command('Gets the pfp of a user', 'getpfp', message => {
     let user = message.mentions.users.first()
     if (user) {
-      if (user.avatarURL != null) {
-        message.channel.send(user.avatarURL)
-      } else {
-        message.channel.send('User has no/default pfp')
-      }
+      message.channel.send(user.avatarURL)
     } else {
-      message.channel.send(`No user specified`)
+      message_('Please mention a user', message)
     }
   }),
 
@@ -164,7 +160,6 @@ Commands.push(
     message_(echo_message, message)
   })
 )
-
 
 const LID = {
   // Language and ID Pairs
@@ -235,7 +230,6 @@ const LID = {
     language: 'NodeJS'
   }
 }
-
 
 // Eval Commands!
 for (let i in LID) {
