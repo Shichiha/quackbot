@@ -103,6 +103,14 @@ function Eval_ (id, message, extra_args) {
     })
 }
 
+function getUserFromID (id) {
+  return new Promise((resolve, reject) => {
+    client.users.fetch(id).then(user => {
+      resolve(user)
+    })
+  })
+}
+
 // All the commands!
 const Commands = []
 Commands.push(
@@ -134,7 +142,7 @@ Commands.push(
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
   new Command('Gets the pfp of a user', 'getpfp', message => {
-    let user = message.mentions.users.first()
+    let user = message.mentions.users.first() || getUserFromID(message.split(' ')[1])
     if (user) {
       message.channel.send(`${user.avatarURL()}?size=4096`)
     } else {
