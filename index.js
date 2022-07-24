@@ -10,7 +10,9 @@ const { msToRelativeTime, Command } = require('./helper.js')
 const activities_list = require('./activities.json')
 
 // Logging
-if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') }
+if (!fs.existsSync('./logs')) {
+  fs.mkdirSync('./logs')
+}
 logger.setDate(() => new Date().toLocaleTimeString())
 
 // Client
@@ -25,7 +27,7 @@ client.on('ready', () => {
 })
 
 // A Safe Message (Just in case string is too long)
-function message_(to_send, msg) {
+function message_ (to_send, msg) {
   if (to_send.length >= 500) {
     let dn = Date.now()
     //  ^ Low Effort DN Joke
@@ -50,7 +52,7 @@ function message_(to_send, msg) {
 }
 
 // A "safe" evaluator which uses rextest.com
-function rextest_eval(code, lcw, extra_args) {
+function rextest_eval (code, lcw, extra_args) {
   let url = 'https://rextester.com/rundotnet/Run'
   let data = {
     LanguageChoiceWrapper: lcw,
@@ -83,27 +85,29 @@ function rextest_eval(code, lcw, extra_args) {
 }
 
 // Evaluate Command Helper
-function Eval_(id, message, extra_args) {
-  let code = message.content.split(' ').slice(1).join(' ')
+function Eval_ (id, message, extra_args) {
+  let code = message.content
+    .split(' ')
+    .slice(1)
+    .join(' ')
   logger.info(`Evaluating ${code}`)
-  rextest_eval(code, id, extra_args).then(body => {
-    let body_ = JSON.parse(body)
-    let to_send = `\`\`\`\n${body_.Result}\n\`\`\``
-    message_(to_send, message)
-    logger.info(body)
-  }
-  ).catch(err => {
-    logger.error(err)
-  }
-  )
+  rextest_eval(code, id, extra_args)
+    .then(body => {
+      let body_ = JSON.parse(body)
+      let to_send = `\`\`\`\n${body_.Result}\n\`\`\``
+      message_(to_send, message)
+      logger.info(body)
+    })
+    .catch(err => {
+      logger.error(err)
+    })
 }
-
 
 // All the packaged commands
 const Commands = []
 Commands.push(
   new Command('All the functions and their usage', 'help', message => {
-    // Help 
+    // Help
     let help_message = ''
     for (let i = 0; i < Commands.length; i++) {
       help_message += `${Commands[i].description}\nUsage: ${Commands[i].usage}\n\n`
@@ -115,7 +119,7 @@ Commands.push(
   new Command('?', 'ping', message => {
     message.channel.send(
       `🏓 Pong!\nLatency is ${Date.now() -
-      message.createdTimestamp}ms.\nAPI Latency is ${Math.round(
+        message.createdTimestamp}ms.\nAPI Latency is ${Math.round(
         client.ws.ping
       )}ms`
     )
@@ -156,32 +160,24 @@ Commands.push(
       }
     }
     message_(echo_message, message)
-  }),
-
-  // Lua Eval
-  new Command('Evaluates a lua code snippet', 'lua', message => {
-    Eval_("14", message)
-  }),
-
-  // Kotlin Eval
-  new Command('Evaluates a kotlin code snippet', 'kotlin', message => {
-    Eval_("43", message)
-  }),
-
-  // JS Eval
-  new Command('Evaluates a javascript code snippet', 'js', message => {
-    Eval_("17", message)
-  }),
-
-  // C++ Eval
-  new Command('Evaluates a c++ code snippet', 'cpp', message => {
-    Eval_("7", message, { CompilerArgs: "-Wall -std=c++14 -O2 -o a.out source_file.cpp" })
-  }),
+  })
 )
+
+// Eval commands!
+const languages = { lua: '14', kotlin: '43', js: '17', cpp: '7' }
+for (let i = 0; i < languages.length; i++) {
+  let langName = Object.keys(languages)[i]
+  let langID = languages[langName]
+  Commands.push(
+    new Command(`Evaluates a ${langName} code snippet`, langName, message => {
+      Eval_(langID, message)
+    })
+  )
+}
 
 // Message Create Event
 client.on('messageCreate', async message => {
-  if (message.author.bot || message.author.id == client.user.id) return;
+  if (message.author.bot || message.author.id == client.user.id) return
   for (let i = 0; i < Commands.length; i++) {
     let prefix = '>'
     let commandName = Commands[i].usage
@@ -189,8 +185,7 @@ client.on('messageCreate', async message => {
     if (message.content.indexOf(command) === 0) {
       Commands[i].cmd_function(message)
       logger.info(`${message.author.username}: ${message.content}
-      > ${command.usage}`
-      )
+      > ${command.usage}`)
     }
   }
 })
