@@ -142,7 +142,7 @@ Commands.push(
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
   new Command('Gets the pfp of a user', 'getpfp', message => {
-    let user = message.mentions.users.first() || getUserFromID(message.split(' ')[1])
+    let user = message.mentions.users.first() || getUserFromID(message.content.split(' ')[1])
     if (user) {
       message.channel.send(`${user.avatarURL()}?size=4096`)
     } else {
