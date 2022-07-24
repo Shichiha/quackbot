@@ -103,14 +103,16 @@ function Eval_ (id, message, extra_args) {
     })
 }
 
-// All the packaged commands
+// All the commands!
 const Commands = []
 Commands.push(
   new Command('All the functions and their usage', 'help', message => {
     // Help
     let help_message = ''
     for (let i = 0; i < Commands.length; i++) {
-      help_message += `${Commands[i].description}\nUsage: ${Commands[i].usage}\n\n`
+      if (Commands[i].show_in_help) {
+        help_message += `${Commands[i].description}\nUsage: ${Commands[i].usage}\n\n`
+      } 
     }
     message_(help_message, message)
   }),
@@ -161,30 +163,11 @@ Commands.push(
     }
     message_(echo_message, message)
   })
-
-  // // Lua Eval
-  // new Command('Evaluates a lua code snippet', 'lua', message => {
-  //   Eval_('14', message)
-  // }),
-
-  // // Kotlin Eval
-  // new Command('Evaluates a kotlin code snippet', 'kotlin', message => {
-  //   Eval_('43', message)
-  // }),
-
-  // // JS Eval
-  // new Command('Evaluates a javascript code snippet', 'js', message => {
-  //   Eval_('17', message)
-  // }),
-
-  // // C++ Eval
-  // new Command('Evaluates a c++ code snippet', 'cpp', message => {
-  //   Eval_('7', message, {
-  //     CompilerArgs: '-Wall -std=c++14 -O2 -o a.out source_file.cpp'
-  // })
 )
 
-const LID = { // Language and ID Pairs
+
+const LID = {
+  // Language and ID Pairs
   cpp: {
     id: 7,
     language: 'C++',
@@ -201,9 +184,60 @@ const LID = { // Language and ID Pairs
   lua: {
     id: 14,
     language: 'Lua'
+  },
+  bash: {
+    id: 38,
+    language: 'Bash'
+  },
+  asm: {
+    id: 15,
+    language: 'Assembly'
+  },
+  py: {
+    id: 5,
+    language: 'Python'
+  },
+  py3: {
+    id: 24,
+    language: 'Python3'
+  },
+  rust: {
+    id: 46,
+    language: 'Rust'
+  },
+  mysql: {
+    id: 33,
+    language: 'MySQL'
+  },
+  fortran: {
+    id: 45,
+    language: 'Fortran'
+  },
+  ruby: {
+    id: 12,
+    language: 'Ruby'
+  },
+  csharp: {
+    id: 1,
+    language: 'C#'
+  },
+  d: {
+    id: 30,
+    language: 'D',
+    ExtraArgs: { CompilerArgs: 'source_file.d -ofa.out' }
+  },
+  pascal: {
+    id: 9,
+    language: 'Pascal'
+  },
+  nodejs: {
+    id: 23,
+    language: 'NodeJS'
   }
 }
 
+
+// Eval Commands!
 for (let i in LID) {
   let language = LID[i]
   Commands.push(
@@ -212,7 +246,8 @@ for (let i in LID) {
       `${i}`,
       message => {
         Eval_(language.id, message, language.ExtraArgs)
-      }
+      },
+      false
     )
   )
 }
