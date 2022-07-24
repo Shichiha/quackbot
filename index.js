@@ -133,12 +133,12 @@ Commands.push(
     let uptime_r = `${msToRelativeTime(uptime)} ago`
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
-  new Command('Gets the pfp of a user', 'getpfp', message => {
+  new Command('getpfp', 'Gets the pfp of a user', 'getpfp', message => {
     let user = message.mentions.users.first()
     if (user) {
-      message.channel.send(user.avatarURL)
+      message.channel.send(`${user.avatarURL()}?size=4096`)
     } else {
-      message_('Please mention a user', message)
+      message.channel.send(`no user, wat?`)
     }
   }),
 
