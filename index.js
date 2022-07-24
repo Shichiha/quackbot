@@ -95,9 +95,9 @@ function Eval_ (id, message, extra_args) {
     .then(body => {
       let body_ = JSON.parse(body)
       let to_send = body_.Result
-      to_send += body_.Errors
-      to_send += body_.Warnings
-      to_send += `\n ${body_.Stats}`
+      to_send =+ body_.Errors
+      to_send =+ body_.Warnings
+      to_send =+ `\n ${body_.Stats}`
       message_(to_send, message)
       logger.info(body)
     })
@@ -137,7 +137,9 @@ Commands.push(
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
   new Command('Gets the pfp of a user', 'getpfp', message => {
-    let user = message.mentions.users.first() || client.users.cache.find(user => user.id === message.content.split(' ')[1])
+    let user =
+      message.mentions.users.first() ||
+      client.users.cache.find(user => user.id === message.content.split(' ')[1])
     if (user) {
       message.channel.send(`${user.avatarURL()}?size=4096`)
     } else {
