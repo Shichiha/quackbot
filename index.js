@@ -95,8 +95,13 @@ function Eval_ (id, message, extra_args) {
     .then(body => {
       let body_ = JSON.parse(body)
       let to_send = body_.Result
-      to_send += body_.Errors
-      to_send += body_.Warnings
+
+      if (body_.Errors != null) {
+        to_send += body_.Errors_
+      }
+      if (body_.Warnings != null) {
+        to_send += body_.Warnings
+      }
       message_(to_send, message)
       logger.info(body)
     })
