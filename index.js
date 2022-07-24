@@ -161,17 +161,59 @@ Commands.push(
     }
     message_(echo_message, message)
   })
+
+  // // Lua Eval
+  // new Command('Evaluates a lua code snippet', 'lua', message => {
+  //   Eval_('14', message)
+  // }),
+
+  // // Kotlin Eval
+  // new Command('Evaluates a kotlin code snippet', 'kotlin', message => {
+  //   Eval_('43', message)
+  // }),
+
+  // // JS Eval
+  // new Command('Evaluates a javascript code snippet', 'js', message => {
+  //   Eval_('17', message)
+  // }),
+
+  // // C++ Eval
+  // new Command('Evaluates a c++ code snippet', 'cpp', message => {
+  //   Eval_('7', message, {
+  //     CompilerArgs: '-Wall -std=c++14 -O2 -o a.out source_file.cpp'
+  // })
 )
 
-// Eval commands!
-const languages = { lua: '14', kotlin: '43', js: '17', cpp: '7' }
-for (let i = 0; i < languages.length; i++) {
-  let langName = Object.keys(languages)[i]
-  let langID = languages[langName]
+const LID = { // Language and ID Pairs
+  cpp: {
+    id: 7,
+    language: 'C++',
+    ExtraArgs: { CompilerArgs: '-Wall -std=c++14 -O2 -o a.out source_file.cpp' }
+  },
+  js: {
+    id: 17,
+    language: 'JavaScript'
+  },
+  kotlin: {
+    id: 43,
+    language: 'Kotlin'
+  },
+  lua: {
+    id: 14,
+    language: 'Lua'
+  }
+}
+
+for (let i in LID) {
+  let language = LID[i]
   Commands.push(
-    new Command(`Evaluates a ${langName} code snippet`, langName, message => {
-      Eval_(langID, message)
-    })
+    new Command(
+      `Evaluates a ${language.language} code snippet`,
+      `${i}`,
+      message => {
+        Eval_(language.id, message, language.ExtraArgs)
+      }
+    )
   )
 }
 
