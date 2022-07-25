@@ -20,13 +20,16 @@ logger.setDate(() => new Date().toLocaleTimeString())
 // Client
 const client = new Discord.Client({ checkUpdate: false })
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`)
+  logger.info('hello world')
+  logger.info(`Logged in as ${client.user.tag}!`)
   // Setting User Activity (Playing a random activity)
   setInterval(() => {
     const index = Math.floor(Math.random() * (activities_list.length - 1) + 1)
     client.user.setActivity(activities_list[index])
   }, 5000)
 })
+
+
 
 // A "Safe" Message (Just in case string is too long)
 function message_ (to_send, msg) {
@@ -90,7 +93,7 @@ function Eval_ (id, message, extra_args) {
       let to_send = body_.Result
 
       if (body_.Errors != null) {
-        to_send += body_.Errors_
+        to_send += body_.Errors
       }
       if (body_.Warnings != null) {
         to_send += body_.Warnings
@@ -199,7 +202,7 @@ client.on('messageCreate', async message => {
   )
     return
   const args = message.content.split(' ')
-  Commands.find(e => e.usage == args[0].slice(1))?.cmd_function(
+  Commands.find(e => e.usage == args[0].slice(prefix.length))?.cmd_function(
     message,
     args.slice(1)
   )
