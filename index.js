@@ -5,7 +5,7 @@ const fs = require('fs')
 const request = require('request')
 
 // Internal Resources
-const { token } = require('./config.json')
+const { token ,prefix} = require('./config.example.json')
 const { msToRelativeTime, Command } = require('./helper.js')
 const activities_list = require('./activities.json')
 
@@ -140,32 +140,17 @@ Commands.push(
     let uptime_r = `${msToRelativeTime(uptime)} ago`
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
-  new Command('Gets the pfp of a user', 'getpfp', message => {
-    let user =
-      message.mentions.users.first() ||
-      client.users.cache.find(user => user.id === message.content.split(' ')[1])
-    if (user) {
-      message.channel.send(`${user.avatarURL()}?size=4096`)
-    } else {
-      message.channel.send(`no user, wat?`)
+  new Command('Gets the pfp of a user', 'getpfp', async (message,args)=> {
+    console.log(message.guild.members.cache)
+    let user = message.mentions.users.first() || client.users.cache.find(user => user.id === args[0] || user.username.toLowerCase().startsWith(args[0].toLowerCase()))
+    return  user ? message.channel.send(user.displayAvatarURL({size:1024,dynamic:true})) : message.channel.send(`no user, wat?`)
     }
-  }),
+
+  ),
 
   // Echo
-  new Command('Echoes back what you say', 'echo', message => {
-    let blocked = ['?echo']
-    let args = message.content.split(' ')
-    let echo_message = ''
-    for (let i = 1; i < args.length; i++) {
-      echo_message += `${args[i]} `
-    }
-    for (let i = 0; i < blocked.length; i++) {
-      if (echo_message.includes(blocked[i])) {
-        let index = echo_message.indexOf(blocked[i])
-        // add an invisible character to the start of the string so that the command is not executed (LOL!)
-        echo_message = `\u200b${echo_message.substring(index)}`
-      }
-    }
+  new Command('Echoes back what you say', 'echo', (message,args) => {
+   let echo_message = args.join(" ")
     message_(echo_message, message)
   })
 )
@@ -247,7 +232,7 @@ for (let i in LID) {
     new Command(
       `Evaluates a ${language.language} code snippet`,
       `${i}`,
-      message => {
+        (message) => {
         Eval_(language.id, message, language.ExtraArgs)
       },
       false
@@ -257,17 +242,11 @@ for (let i in LID) {
 
 // Message Create Event
 client.on('messageCreate', async message => {
-  if (message.author.bot || message.author.id == client.user.id) return
-  for (let i = 0; i < Commands.length; i++) {
-    let prefix = '>'
-    let commandName = Commands[i].usage
-    let command = `${prefix}${commandName}`
-    if (message.content.indexOf(command) === 0) {
-      Commands[i].cmd_function(message)
-      logger.info(`${message.author.username}: ${message.content}
-      > ${command.usage}`)
-    }
-  }
+  if (message.author.bot || message.author.id == client.user.id|| !message.content.startsWith(prefix)) return
+  const args = message.content.split(" ")
+ Commands.find(e=>e.usage==args[0].slice(1))?.cmd_function(message,args.slice(1))
+
+
 })
 
 // Start the bot (synchronous)
