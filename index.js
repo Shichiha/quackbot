@@ -3,9 +3,11 @@ const Discord = require('discord.js-selfbot-v13')
 const logger = require('node-color-log')
 const fs = require('fs')
 const request = require('request')
+const { exec } = require('child_process')
 
 // Internal Resources
-const { token ,prefix} = require('./config.example.json')
+const { token, prefix } = require('./config.json')
+const LID = require('./LID.js')
 const { msToRelativeTime, Command } = require('./helper.js')
 const activities_list = require('./activities.json')
 
@@ -26,7 +28,7 @@ client.on('ready', () => {
   }, 5000)
 })
 
-// A Safe Message (Just in case string is too long)
+// A "Safe" Message (Just in case string is too long)
 function message_ (to_send, msg) {
   if (to_send.length >= 500) {
     let dn = Date.now()
@@ -59,15 +61,6 @@ function rextest_eval (code, lcw, extra_args) {
     EditorChoiceWrapper: '1',
     LayoutChoiceWrapper: '1',
     Program: code,
-    Input: '',
-    Privacy: '',
-    PrivacyUsers: '',
-    Title: '',
-    SavedOutput: '',
-    WholeError: '',
-    WholeWarning: '',
-    StatsToSave: '',
-    CodeGuid: '',
     IsInEditMode: 'False',
     IsLive: 'False',
     ...extra_args
@@ -140,89 +133,43 @@ Commands.push(
     let uptime_r = `${msToRelativeTime(uptime)} ago`
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
-  new Command('Gets the pfp of a user', 'getpfp', async (message,args)=> {
-    let user = message.mentions.users.first() || client.users.cache.find(user => user.id === args[0] || user.username.toLowerCase().startsWith(args[0].toLowerCase()))
-    return  user ? message.channel.send(user.displayAvatarURL({size:1024,dynamic:true})) : message.channel.send(`no user, wat?`)
-    }
-
-  ),
+  new Command('Gets the pfp of a user', 'getpfp', async (message, args) => {
+    let user =
+      message.mentions.users.first() ||
+      client.users.cache.find(
+        user =>
+          user.id === args[0] ||
+          user.username.toLowerCase().startsWith(args[0].toLowerCase())
+      )
+    return user
+      ? message.channel.send(
+          user.displayAvatarURL({ size: 1024, dynamic: true })
+        )
+      : message.channel.send('No User Specified')
+  }),
 
   // Echo
-  new Command('Echoes back what you say', 'echo', (message,args) => {
-   let echo_message = args.join(" ")
+  new Command('Echoes back what you say', 'echo', (message, args) => {
+    let echo_message = args.join(' ')
     message_(echo_message, message)
-  })
-)
+  }),
 
-const LID = {
-  // Language and ID Pairs
-  cpp: {
-    id: 7,
-    language: 'C++',
-    ExtraArgs: { CompilerArgs: '-Wall -std=c++14 -O2 -o a.out source_file.cpp' }
-  },
-  js: {
-    id: 17,
-    language: 'JavaScript'
-  },
-  kotlin: {
-    id: 43,
-    language: 'Kotlin'
-  },
-  lua: {
-    id: 14,
-    language: 'Lua'
-  },
-  bash: {
-    id: 38,
-    language: 'Bash'
-  },
-  asm: {
-    id: 15,
-    language: 'Assembly'
-  },
-  py: {
-    id: 5,
-    language: 'Python'
-  },
-  py3: {
-    id: 24,
-    language: 'Python3'
-  },
-  rust: {
-    id: 46,
-    language: 'Rust'
-  },
-  mysql: {
-    id: 33,
-    language: 'MySQL'
-  },
-  fortran: {
-    id: 45,
-    language: 'Fortran'
-  },
-  ruby: {
-    id: 12,
-    language: 'Ruby'
-  },
-  csharp: {
-    id: 1,
-    language: 'C#'
-  },
-  d: {
-    id: 30,
-    language: 'D',
-    ExtraArgs: { CompilerArgs: 'source_file.d -ofa.out' }
-  },
-  pascal: {
-    id: 9,
-    language: 'Pascal'
-  },
-  nodejs: {
-    id: 23,
-    language: 'NodeJS'
-  }
-}
+  // Update
+  new Command(
+    'Updates the bot',
+    'update',
+    message => {
+      message.channel.send('Updating...')
+      exec('git pull', (err, stdout, stderr) => {
+        if (err) {
+          logger.error(err)
+        }
+      })
+      process.exit()
+    },
+    false
+  )
+)
 
 // Eval Commands!
 for (let i in LID) {
@@ -231,7 +178,7 @@ for (let i in LID) {
     new Command(
       `Evaluates a ${language.language} code snippet`,
       `${i}`,
-        (message) => {
+      message => {
         Eval_(language.id, message, language.ExtraArgs)
       },
       false
@@ -241,11 +188,18 @@ for (let i in LID) {
 
 // Message Create Event
 client.on('messageCreate', async message => {
-  if (message.author.bot || message.author.id == client.user.id|| !message.content.startsWith(prefix)) return
-  const args = message.content.split(" ")
- Commands.find(e=>e.usage==args[0].slice(1))?.cmd_function(message,args.slice(1))
-
-
+  if (
+    message.author.bot ||
+    message.author.id == client.user.id ||
+    !message.content.startsWith(prefix)
+  )
+    return
+  const args = message.content.split(' ')
+  Commands.find(e => e.usage == args[0].slice(1))?.cmd_function(
+    message,
+    args.slice(1)
+  )
+  logger.info(`${message.author.username} > ${args[0]}`)
 })
 
 // Start the bot (synchronous)
