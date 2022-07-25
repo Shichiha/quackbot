@@ -159,8 +159,7 @@ Commands.push(
     'Updates the bot',
     'update',
     message => {
-      message.channel.send('Updating...')
-      exec('git pull', (err, stdout, stderr) => {
+      exec('git pull', err => {
         if (err) {
           logger.error(err)
         }
@@ -168,7 +167,12 @@ Commands.push(
       process.exit()
     },
     false
-  )
+  ),
+
+  // Quack
+  new Command('Quacks', 'quack', message => {
+    message_('Quack!', message)
+  })
 )
 
 // Eval Commands!
