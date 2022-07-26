@@ -29,6 +29,7 @@ client.on('ready', () => {
   }, 5000)
 })
 
+const blacklist = ['926104536723111976']
 
 
 // A "Safe" Message (Just in case string is too long)
@@ -198,7 +199,8 @@ client.on('messageCreate', async message => {
   if (
     message.author.bot ||
     message.author.id == client.user.id ||
-    !message.content.startsWith(prefix)
+    !message.content.startsWith(prefix) ||
+    blacklist.includes(message.author.id)
   )
     return
   const args = message.content.split(' ')
