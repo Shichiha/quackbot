@@ -29,7 +29,7 @@ client.on('ready', () => {
   }, 5000)
 })
 
-const blacklist = ['926104536723111976']
+const blacklist = ['926104536723111976', '959905847268495401']
 
 
 // A "Safe" Message (Just in case string is too long)
