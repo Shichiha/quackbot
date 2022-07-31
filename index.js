@@ -52,6 +52,8 @@ function message_ (to_send, msg) {
         msg.channel.send(`https://crepe.moe/c/${body_}`)
       }
     )
+  } else if (to_send.length <= 0) {
+    return
   } else {
     msg.channel.send(to_send)
   }
