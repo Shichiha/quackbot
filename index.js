@@ -139,14 +139,7 @@ Commands.push(
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
   new Command('Gets the pfp of a user', 'getpfp', async (message, args) => {
-    let user =
-      message.mentions.users.first() ||
-      client.users.cache.find(
-        user =>
-          user.id === args[0] ||
-          user.username.toLowerCase().startsWith(args[0].toLowerCase()) ||
-          message.author
-      )
+    let user = message.mentions.users.first() || args[0]?  client.users.cache.find( user => user.id === args[0] || user.username.toLowerCase().startsWith(args[0].toLowerCase())) : message.author
     return user
       ? message.channel.send(
           user.displayAvatarURL({ size: 1024, dynamic: true })
