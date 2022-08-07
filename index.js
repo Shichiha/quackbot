@@ -31,7 +31,6 @@ client.on('ready', () => {
 
 const blacklist = ['926104536723111976', '959905847268495401']
 
-
 // A "Safe" Message (Just in case string is too long)
 function message_ (to_send, msg) {
   if (to_send.length >= 500) {
@@ -145,13 +144,14 @@ Commands.push(
       client.users.cache.find(
         user =>
           user.id === args[0] ||
-          user.username.toLowerCase().startsWith(args[0].toLowerCase())
+          user.username.toLowerCase().startsWith(args[0].toLowerCase()) ||
+          message.author
       )
     return user
       ? message.channel.send(
           user.displayAvatarURL({ size: 1024, dynamic: true })
         )
-      : message.channel.send('No User Specified')
+      : message.channel.send('User not found')
   }),
 
   // Echo
