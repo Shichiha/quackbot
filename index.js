@@ -35,7 +35,6 @@ const blacklist = ['926104536723111976', '959905847268495401']
 function message_ (to_send, msg) {
   if (to_send.length >= 500) {
     let dn = Date.now()
-    //  ^ Low Effort DN Joke
     fs.writeFileSync('./logs/' + dn + '.txt', to_send)
     let formData = {
       file: fs.createReadStream('./logs/' + dn + '.txt')
@@ -47,8 +46,9 @@ function message_ (to_send, msg) {
           logger.error(err)
         }
         logger.info(body, 'Uploaded to crepe.moe > ', res)
-        let body_ = body.replace('.txt', '')
-        msg.channel.send(`https://crepe.moe/c/${body_}`)
+        let __ = JSON.parse(body)
+        let ___ = __.data.url.id
+        msg.channel.send(`https://crepe.moe/c/${___}`)
       }
     )
   } else if (to_send.length <= 0) {
