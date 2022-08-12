@@ -1,1 +1,2 @@
-while [ true ]; do node index.js; done;
+#!/bin/bash
+while [ true ]; do npm run start; done;

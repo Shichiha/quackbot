@@ -1,3 +1,5 @@
+import { DiscordAPIError, Message } from "discord.js-selfbot-v13"
+
 // Packages
 const Discord = require('discord.js-selfbot-v13')
 const logger = require('node-color-log')
@@ -6,10 +8,10 @@ const request = require('request')
 const { exec } = require('child_process')
 
 // Internal Resources
-const { token, prefix } = require('./config.json')
-const LID = require('./LID.js')
-const { msToRelativeTime, Command } = require('./helper.js')
-const activities_list = require('./activities.json')
+const { token, prefix } = require('../config.json')
+const LID = require('./LID')
+const { msToRelativeTime, Command } = require('./helper')
+const activities_list = require('./activities')
 
 // Logging
 if (!fs.existsSync('./logs')) {
@@ -32,16 +34,16 @@ client.on('ready', () => {
 const blacklist = ['926104536723111976', '959905847268495401']
 
 // A "Safe" Message (Just in case string is too long)
-function message_ (to_send, msg) {
-  if (to_send.length >= 500) {
+function SendMessage (txt: string, msg: Message) {
+  if (txt.length >= 500) {
     let dn = Date.now()
-    fs.writeFileSync('./logs/' + dn + '.txt', to_send)
+    fs.writeFileSync('./logs/' + dn + '.txt', txt)
     let formData = {
       file: fs.createReadStream('./logs/' + dn + '.txt')
     }
     request.post(
       { url: 'https://crepe.moe/upload', formData: formData },
-      (err, res, body) => {
+      (err: any, res: any, body: any) => {
         if (err) {
           logger.error(err)
         }
@@ -51,15 +53,15 @@ function message_ (to_send, msg) {
         msg.channel.send(`https://crepe.moe/c/${___}`)
       }
     )
-  } else if (to_send.length <= 0) {
+  } else if (txt.length <= 0) {
     return
   } else {
-    msg.channel.send(to_send)
+    msg.channel.send(txt)
   }
 }
 
 // A "safe" evaluator which uses rextest.com
-function rextest_eval (code, lcw, extra_args) {
+function RextestRun (code: string, lcw: string, extra: any) {
   let url = 'https://rextester.com/rundotnet/Run'
   let data = {
     LanguageChoiceWrapper: lcw,
@@ -68,11 +70,11 @@ function rextest_eval (code, lcw, extra_args) {
     Program: code,
     IsInEditMode: 'False',
     IsLive: 'False',
-    ...extra_args
+    ...extra
   }
   logger.info(`Sending ${lcw} to ${url}`)
   return new Promise((resolve, reject) => {
-    request.post(url, { form: data }, (err, res, body) => {
+    request.post(url, { form: data }, (err: any, body: any) => {
       if (err) {
         reject(err)
       } else {
@@ -83,14 +85,14 @@ function rextest_eval (code, lcw, extra_args) {
 }
 
 // Evaluate Command Helper
-function Eval_ (id, message, extra_args) {
+function CmdEval (id: string, message: any, extra_args: any) {
   let code = message.content
     .split(' ')
     .slice(1)
     .join(' ')
   logger.info(`Evaluating ${code}`)
-  rextest_eval(code, id, extra_args)
-    .then(body => {
+  RextestRun(code, id, extra_args)
+    .then((body: any) => {
       let body_ = JSON.parse(body)
       let to_send = body_.Result
 
@@ -100,7 +102,7 @@ function Eval_ (id, message, extra_args) {
       if (body_.Warnings != null) {
         to_send += body_.Warnings
       }
-      message_(to_send, message)
+      SendMessage(to_send, message)
       logger.info(body)
     })
     .catch(err => {
@@ -109,9 +111,9 @@ function Eval_ (id, message, extra_args) {
 }
 
 // All the commands!
-const Commands = []
+const Commands: typeof Command[] = []
 Commands.push(
-  new Command('All the functions and their usage', 'help', message => {
+  new Command('All the functions and their usage', 'help', (message: any) => {
     // Help
     let help_message = ''
     for (let i = 0; i < Commands.length; i++) {
@@ -119,11 +121,11 @@ Commands.push(
         help_message += `${Commands[i].description}\nUsage: ${Commands[i].usage}\n\n`
       }
     }
-    message_(help_message, message)
+    SendMessage(help_message, message)
   }),
 
   // Ping
-  new Command('?', 'ping', message => {
+  new Command('?', 'ping', (message: any) => {
     message.channel.send(
       `🏓 Pong!\nLatency is ${Date.now() -
         message.createdTimestamp}ms.\nAPI Latency is ${Math.round(
@@ -133,13 +135,13 @@ Commands.push(
   }),
 
   // Uptime
-  new Command('How long the bot has been on', 'uptime', message => {
+  new Command('How long the bot has been on', 'uptime', (message: any) => {
     let uptime = client.uptime
     let uptime_r = `${msToRelativeTime(uptime)} ago`
     message.channel.send(`Uptime: ${uptime_r}`)
   }),
-  new Command('Gets the pfp of a user', 'getpfp', async (message, args) => {
-    let user = message.mentions.users.first() || args[0]?  client.users.cache.find( user => user.id === args[0] || user.username.toLowerCase().startsWith(args[0].toLowerCase())) : message.author
+  new Command('Gets the pfp of a user', 'getpfp', async (message: any, args: any) => {
+    let user = message.mentions.users.first() || args[0]?  client.users.cache.find( (user: any) => user.id === args[0] || user.username.toLowerCase().startsWith(args[0].toLowerCase())) : message.author
     return user
       ? message.channel.send(
           user.displayAvatarURL({ size: 1024, dynamic: true })
@@ -148,17 +150,17 @@ Commands.push(
   }),
 
   // Echo
-  new Command('Echoes back what you say', 'echo', (message, args) => {
+  new Command('Echoes back what you say', 'echo', (message: any, args: any) => {
     let echo_message = args.join(' ')
-    message_(echo_message, message)
+    SendMessage(echo_message, message)
   }),
 
   // Update
   new Command(
     'Updates the bot',
     'update',
-    message => {
-      exec('git pull', err => {
+    (message: any) => {
+      exec('git pull', (err: any) => {
         if (err) {
           logger.error(err)
         }
@@ -169,8 +171,8 @@ Commands.push(
   ),
 
   // Quack
-  new Command('Quacks', 'quack', message => {
-    message_('Quack!', message)
+  new Command('Quacks', 'quack', (message: any) => {
+    SendMessage('Quack!', message)
   })
 )
 
@@ -181,8 +183,8 @@ for (let i in LID) {
     new Command(
       `Evaluates a ${language.language} code snippet`,
       `${i}`,
-      message => {
-        Eval_(language.id, message, language.ExtraArgs)
+      (message: any) => {
+        CmdEval(language.id, message, language.ExtraArgs)
       },
       false
     )
@@ -190,7 +192,7 @@ for (let i in LID) {
 }
 
 // Message Create Event
-client.on('messageCreate', async message => {
+client.on('messageCreate', async (message: any) => {
   if (
     message.author.bot ||
     message.author.id == client.user.id ||

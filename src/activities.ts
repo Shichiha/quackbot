@@ -1,4 +1,4 @@
-[
+export const activities = [
   "chopping 10 fingers",
   "outside",
   "in the cement",

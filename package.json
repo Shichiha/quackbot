@@ -1,11 +1,13 @@
 {
   "name": "quackbot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Not a selfbot!",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "check-update": "git pull && npm install && npm run build",
+    "build": "tsc --outDir build",
+    "start": "node build/index.js",
+    "restart": "npm run check-update && npm run start"
   },
   "author": "Kiruhara Nanako",
   "license": "MIT",

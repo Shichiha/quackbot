@@ -1,4 +1,4 @@
-function msToRelativeTime (ms) {
+export function msToRelativeTime (ms: number) {
   var seconds = Math.floor((ms / 1000) % 60)
   var decimal = Math.floor(((ms / 1000) % 1) * 10)
   var minutes = Math.floor((ms / (1000 * 60)) % 60)
@@ -22,15 +22,16 @@ function msToRelativeTime (ms) {
   }
   return result
 }
-class Command {
-  constructor ( description, usage, cmd_function, show_in_help = true ) {
-    this.usage = usage
+
+export class Command {
+  description: string
+  usage: string
+  cmd_function: (message: any) => void
+  show_in_help: boolean
+  constructor (description: string, usage: string, cmd_function: (message: any) => void, show_in_help: boolean = true) {
     this.description = description
+    this.usage = usage
     this.cmd_function = cmd_function
     this.show_in_help = show_in_help
   }
-}
-module.exports = {
-    msToRelativeTime,
-    Command
 }

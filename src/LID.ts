@@ -1,4 +1,4 @@
-const LID = {
+export const LID = {
   // Language and ID Pairs
   cpp: {
     id: 7,
@@ -67,5 +67,3 @@ const LID = {
     language: 'NodeJS'
   }
 }
-
-module.exports = LID
