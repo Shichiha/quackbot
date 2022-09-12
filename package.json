@@ -1,18 +1,25 @@
 {
-  "name": "quackbot",
-  "version": "1.0.1",
-  "description": "Not a selfbot!",
-  "main": "index.js",
-  "scripts": {
-    "check-update": "git pull && npm install && npm run build",
-    "build": "tsc --outDir build",
-    "start": "node build/index.js",
-    "restart": "npm run check-update && npm run start"
-  },
-  "author": "Kiruhara Nanako",
-  "license": "MIT",
-  "dependencies": {
-    "discord.js-selfbot-v13": "^2.3.74",
-    "node-color-log": "^9.0.0"
-  }
+    "name": "quackbot",
+    "version": "2.0.0",
+    "description": "Not a selfbot!",
+    "main": "build/index.js",
+    "scripts": {
+        "build": "tsc --outDir build",
+        "start": "node build/index.js",
+        "build:start": "npm run build && npm start"
+    },
+    "author": "shichihachi",
+    "license": "MIT",
+    "dependencies": {
+        "discord.js-selfbot-v13": "^2.6.14"
+    },
+    "devDependencies": {
+        "eslint": "^8.23.0",
+        "eslint-config-standard-with-typescript": "^22.0.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-n": "^15.2.5",
+        "eslint-plugin-promise": "^6.0.1",
+        "ts-loader": "^9.3.1",
+        "typescript": "^4.8.3"
+    }
 }

@@ -1,4 +1,7 @@
 node_modules/
 config*.json
+config.ts
 logs
 build
+*.lock
+package-lock.json
