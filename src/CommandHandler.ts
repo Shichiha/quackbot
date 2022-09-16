@@ -1,4 +1,13 @@
-import { Command } from "./Deps";
+import { Command, Log, LogError } from "./Deps";
 import { readdirSync } from "fs";
 import { join } from "path";
-export const Commands: Command[] = readdirSync(join(__dirname, "Commands")).map(file => require(join(__dirname, "Commands", file)).default)
+let commandDir = readdirSync(join(__dirname, "Commands"))
+export const Commands: Command[] = commandDir.map(module => {
+    try {
+        Log(`loaded command ${module}`)
+        return require(join(__dirname, "Commands", module)).default
+    }
+    catch (error) {
+        LogError(error as Error)
+    }
+})

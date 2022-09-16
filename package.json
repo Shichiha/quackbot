@@ -6,19 +6,15 @@
     "scripts": {
         "build": "tsc --outDir build",
         "start": "node build/index.js",
-        "build:start": "npm run build && npm start"
+        "prestart": "npm run build"
     },
     "author": "shichihachi",
     "license": "MIT",
     "dependencies": {
+        "chalk": "^4.1.2",
         "discord.js-selfbot-v13": "^2.6.14"
     },
     "devDependencies": {
-        "eslint": "^8.23.0",
-        "eslint-config-standard-with-typescript": "^22.0.0",
-        "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-n": "^15.2.5",
-        "eslint-plugin-promise": "^6.0.1",
         "ts-loader": "^9.3.1",
         "typescript": "^4.8.3"
     }
