@@ -5,7 +5,7 @@ Not a selfbot! 😁
 1. git clone this
 1. open terminal and enter `npm i`
 1. add what needs to be added in `src/config.ts` (there is a `src/config.example.ts` it should be intuitive.)
-1. `npm run build:start` (needs typescript for compiling)
+1. `npm start` (needs typescript for compiling)
 
 # development
 

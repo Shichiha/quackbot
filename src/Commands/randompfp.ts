@@ -9,4 +9,4 @@ function getRandomPfp(m: Message, a: CommonArguments): void {
         else SendMessage("thrown unexpected error.", m)
     })
 }
-export default new Command('Gets the pfp of a random user', 'randompfp', (m, a) => getRandomPfp(m, a))
+export default new Command('Gets the pfp of a random user', 'randompfp', (m, a) => getRandomPfp(m, a), {ShowInHelp:false})
