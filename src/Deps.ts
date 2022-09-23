@@ -1,6 +1,6 @@
 import { Client, ClientEvents, Message } from "discord.js-selfbot-v13";
 import { activities, prefix, token } from "./config";
-import { Log, LogError, msToRelativeTime, SendMessage } from "./Helper";
+import { Log, LogError, SendMessage } from "./Helper";
 interface CommandProperties {
     AdminOnly?: boolean;
     ShowInHelp?: boolean;
@@ -46,7 +46,6 @@ class Service {
 export {
     token,
     prefix,
-    msToRelativeTime,
     Command,
     activities,
     Log,

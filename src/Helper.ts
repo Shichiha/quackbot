@@ -32,19 +32,3 @@ export function SendMessage(txt: string, msg: Message) {
             LogError(e);
         });
 }
-export function msToRelativeTime(ms: number): string {
-    let stringBuffer: string = "";
-    const unitsRT = {
-        seconds: [Math.floor((ms / 1000) % 60), "s"],
-        decimal: [Math.floor(((ms / 1000) % 1) * 10), "ms"],
-        minutes: [Math.floor((ms / (1000 * 60)) % 60), "m"],
-        hours: [Math.floor((ms / (1000 * 60 * 60)) % 24), "h"],
-        days: [Math.floor(ms / (1000 * 60 * 60 * 24)), "d"],
-    };
-    const condition = (n: (string | number)[]) => {
-        n[0] > 0 ? (stringBuffer += `${n[0]}${n[1]}`) : null;
-        return stringBuffer;
-    };
-    for (let unit in unitsRT) condition(unitsRT[unit as keyof typeof unitsRT]);
-    return stringBuffer;
-}
