@@ -12,7 +12,7 @@
     "license": "MIT",
     "dependencies": {
         "discord.js-selfbot-v13": "^2.6.16",
-        "genshinachievement": "github:Shichiha/Genshin-Achievement-Maker"
+        "genshinachievement": "^0.0.5"
     },
     "devDependencies": {
         "typescript": "^4.8.4"
