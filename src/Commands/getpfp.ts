@@ -1,10 +1,14 @@
 import { Message } from "discord.js-selfbot-v13";
-import { Command, CommonArguments, Log } from "../Deps";
+import { Command, CommonArguments, Log, SendMessage } from "../Deps";
 
 function sendPfp(m: Message, a: CommonArguments): void {
+    if (!m.guild) {
+        SendMessage("this command can only be used in a guild", m)
+        return
+    }
     let args = m.content.split(" ");
     let user: any;
-    m.guild!.members.fetch().then((s) => {
+    m.guild.members.fetch().then((s) => {
         user = s.find(
             (u) =>
                 u.user.username
@@ -14,10 +18,10 @@ function sendPfp(m: Message, a: CommonArguments): void {
         );
         let url = user
             ? user.displayAvatarURL({
-                  size: 1024,
-                  dynamic: true,
-                  format: "png",
-              })
+                size: 1024,
+                dynamic: true,
+                format: "png",
+            })
             : null;
         url != null
             ? m.channel.send({ files: [url] })

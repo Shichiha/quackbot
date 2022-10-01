@@ -5,11 +5,13 @@ import { join } from "path";
 let commandDir = readdirSync(join(__dirname, "Commands"));
 export let Commands: Command[] = [];
 
-Commands = commandDir.map((module) => {
-    try {
+for (let module of commandDir) {
+    let command: Command = require(join(__dirname, "Commands", module)).default as Command;
+    
+    if (command) {
         Log(`loaded command ${module}`);
-        return require(join(__dirname, "Commands", module)).default;
-    } catch (error) {
-        LogError(error as Error);
+        Commands.push(command)
+    } else {
+        LogError(new Error(`Command ${module} is broken.`))
     }
-});
+}

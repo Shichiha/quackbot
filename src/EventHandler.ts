@@ -10,6 +10,7 @@ export default function setupEvents(client: Client) {
     client.on("messageCreate", (e) => {
         messageCreate(e, client, Commands);
     });
+    
     Services.forEach((Service) => {
         client.on(Service.event as any, (e) => {
             Service.action(e);

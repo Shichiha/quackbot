@@ -5,17 +5,16 @@
     "main": "build/index.js",
     "scripts": {
         "build": "tsc --outDir build",
-        "start": "node build/index.js",
-        "prestart": "npm run build",
+        "start": "npm run build && node build/index.js",
         "lint": "npx prettier -w src/*.ts"
     },
     "author": "shichihachi",
     "license": "MIT",
     "dependencies": {
-        "chalk": "^4.1.2",
-        "discord.js-selfbot-v13": "^2.6.14"
+        "discord.js-selfbot-v13": "^2.6.16",
+        "genshinachievement": "github:Shichiha/Genshin-Achievement-Maker"
     },
     "devDependencies": {
-        "typescript": "^4.8.3"
+        "typescript": "^4.8.4"
     }
 }
