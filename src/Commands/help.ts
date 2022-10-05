@@ -1,4 +1,4 @@
-import { Command, Log, SendMessage } from "../Deps";
+import { Command, Log, SendMessage } from "../Dependencies";
 
 export default new Command("All the functions and their usage", "help", (m, a) => {
     let stringBuffer = "";

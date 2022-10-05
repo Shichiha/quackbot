@@ -1,5 +1,5 @@
 import { Message } from "discord.js-selfbot-v13";
-import { Command, CommonArguments, LogError } from "../Deps";
+import { Command, CommonArguments, LogError } from "../Dependencies";
 import { genshinAchievement } from "genshinachievement";
 async function sendimage(m: Message, a: CommonArguments) {
     let args = m.content.split(" ");
@@ -11,8 +11,6 @@ async function sendimage(m: Message, a: CommonArguments) {
     } catch (e) {
         LogError(e as Error)
     }
-    
-
 }
 export default new Command("Use genshin achievement maker to get a custom achievement based on your input", "ga", (m, a) =>
     sendimage(m, a)

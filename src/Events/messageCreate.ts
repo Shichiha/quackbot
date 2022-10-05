@@ -1,7 +1,7 @@
 import { Client, Message } from "discord.js-selfbot-v13";
-import { blacklist, prefix } from "../config";
-import { Command, Log } from "../Deps";
-import { admin } from "../config";
+import { blacklist, prefix } from "../cfgHandler";
+import { Command, Log } from "../Dependencies";
+import { admin } from "../cfgHandler";
 export default function messageEvent(
     message: Message,
     client: Client,

@@ -5,6 +5,7 @@
         "strict": true,
         "skipLibCheck": true,
         "outDir": "build",
+        "resolveJsonModule": true
     },
     "exclude": ["src/config.example.ts"]
 }

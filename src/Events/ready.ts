@@ -1,5 +1,5 @@
 import { Client, Options } from "discord.js-selfbot-v13";
-import { activities, Log, prefix } from "../Deps";
+import { activities, Log, prefix } from "../Dependencies";
 
 export default function readyEvent(client: Client) {
     Log(

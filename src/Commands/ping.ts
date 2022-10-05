@@ -1,4 +1,4 @@
-import { Command } from "../Deps";
+import { Command } from "../Dependencies";
 
 export default new Command("?", "ping", (m, a) => {
     m.channel.send(

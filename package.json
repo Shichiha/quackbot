@@ -5,7 +5,7 @@
     "main": "build/index.js",
     "scripts": {
         "build": "tsc --outDir build",
-        "start": "npm run build && node build/index.js",
+        "start": "npm run build && node build/src/index.js",
         "lint": "npx prettier -w src/*.ts"
     },
     "author": "shichihachi",

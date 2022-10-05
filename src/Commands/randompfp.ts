@@ -1,5 +1,5 @@
 import { Message } from "discord.js-selfbot-v13"
-import { Command, CommonArguments, SendMessage } from "../Deps"
+import { Command, CommonArguments, SendMessage } from "../Dependencies"
 
 function getRandomPfp(m: Message, a: CommonArguments): void {
     m.guild!.members.fetch().then(() => {

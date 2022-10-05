@@ -1,4 +1,4 @@
-import { Command, SendMessage } from "../Deps"
+import { Command, SendMessage } from "../Dependencies"
 
 export default new Command('Echoes back what you say', 'echo', (m, a) => {
     let args = a.message.content.split(' ')

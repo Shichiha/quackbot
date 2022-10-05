@@ -1,6 +1,5 @@
 node_modules/
-config*.json
-config.ts
+config.*
 logs
 build
 *.lock

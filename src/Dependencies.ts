@@ -1,5 +1,5 @@
 import { Client, ClientEvents, Message } from "discord.js-selfbot-v13";
-import { activities, prefix, token } from "./config";
+import { activities, prefix, token } from "./cfgHandler";
 import { Log, LogError, SendMessage } from "./Helper";
 interface CommandProperties {
     AdminOnly?: boolean;

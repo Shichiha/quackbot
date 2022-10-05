@@ -1,4 +1,4 @@
-import { Command } from "../Deps";
+import { Command } from "../Dependencies";
 
 export default new Command("How long the bot has been on", "uptime", (m, a) => {
     let now = new Date();

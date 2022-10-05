@@ -5,23 +5,23 @@ function getHMS(time: Date = new Date()) {
     let hours = time.getHours();
     let minutes = time.getMinutes();
     let seconds = time.getSeconds();
-    return [hours, minutes, seconds]
+    return [hours, minutes, seconds];
 }
 export function Log(message: any) {
-    let [hours, minutes, seconds] = getHMS()
+    let [hours, minutes, seconds] = getHMS();
 
-    console.log(
-        `[${hours}:${minutes}:${seconds}]: ${message}`
-    );
+    console.log(`[${hours}:${minutes}:${seconds}]: ${message}`);
 }
 
 export function LogError(error: Error) {
-    let [hours, minutes, seconds] = getHMS()
+    let [hours, minutes, seconds] = getHMS();
 
     let fileName = `logs/error-${Date.now()}`;
     let errorMessage = `[${hours}:${minutes}:${seconds}]: ${error}`;
 
-    fs.writeFile(fileName, errorMessage, (err) => { if (err) LogError(err);});
+    fs.writeFile(fileName, errorMessage, (err) => {
+        if (err) LogError(err);
+    });
     console.log(errorMessage);
 }
 export function SendMessage(txt: string, msg: Message) {

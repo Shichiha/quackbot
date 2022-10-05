@@ -1,5 +1,5 @@
 import { Message } from "discord.js-selfbot-v13";
-import { Command, CommonArguments, Log, SendMessage } from "../Deps";
+import { Command, CommonArguments, Log, SendMessage } from "../Dependencies";
 
 function sendPfp(m: Message, a: CommonArguments): void {
     if (!m.guild) {
