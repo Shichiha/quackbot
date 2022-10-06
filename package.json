@@ -11,8 +11,8 @@
     "author": "shichihachi",
     "license": "MIT",
     "dependencies": {
-        "discord.js-selfbot-v13": "^2.6.16",
-        "genshinachievement": "^0.0.5"
+        "discord.js-selfbot-v13": "^2.7.3",
+        "genshinachievement": "^0.0.6"
     },
     "devDependencies": {
         "typescript": "^4.8.4"
